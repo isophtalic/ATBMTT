@@ -1,0 +1,33 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.left {
+    flex-direction: column;
+    gap: 10;
+}
+.form{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 20px;
+}
+.d-flex{
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+}
+.d-flex-row{
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+}
