@@ -169,7 +169,7 @@ function generatePrimeNumber(digits) {
   const max = Math.pow(10, digits) - 1;
 
   let prime = getRandomInt(min, max);
-  while (!isPrime(prime, 20)) {
+  while (!isPrime(prime)) {
     prime = getRandomInt(min, max);
   }
 
@@ -185,7 +185,7 @@ function randomPrimitiveElement(prime) {
 }
 
 const randomPrivateNumberOne = (prime) => {
-  return Math.floor(2 + Math.random() * (prime - 2));
+  return Math.floor(1 + Math.random() * (prime - 2));
 };
 
 const generatekey = (digits) => {
@@ -213,7 +213,9 @@ const GCD = (a, b) => {
 };
 
 function HashMessage(message) {
-  return sha256(message);
+  const encoder = new TextEncoder();
+  const data = encoder.encode(message);
+  return sha256(data);
 }
 
 var sha256 = function sha256(ascii) {
@@ -317,24 +319,42 @@ var sha256 = function sha256(ascii) {
   }
   return result;
 };
+function hexToBigInt(hex) {
+  const hexWithoutPrefix = hex.startsWith("0x") ? hex.slice(2) : hex;
+  return BigInt("0x" + hexWithoutPrefix);
+}
+function sha256ToBigInt(hash) {
+  if (hash.length % 2 !== 0) {
+    throw new Error("Invalid hash length.");
+  }
+
+  let result = BigInt(0);
+  for (let i = 0; i < hash.length; i += 2) {
+    const hexChunk = hash.slice(i, i + 2);
+    const chunkValue = hexToBigInt(hexChunk);
+    result = (result << 8n) + chunkValue;
+  }
+
+  return Number(result);
+}
 
 const Sign = (prime, alpha, privatekey, message) => {
   const hashMessage = HashMessage(message);
+  console.log(hashMessage);
   let k, delta, gamma;
   do {
-    do {
-      k = Math.floor(2 + Math.random() * (prime - 1));
-    } while (GCD(k, prime - 1) !== 1);
-
+    while (true) {
+      k = Math.floor(2 + Math.random() * (prime - 2));
+      if (GCD(k, prime - 1) === 1) break;
+    }
+    // k = 5;
     delta = modPow(alpha, k, prime);
-    // gamma =
-    //   ((parseInt(hashMessage, 10) - privatekey * delta) *
-    //     modPow(k, prime - 2, prime - 1)) %
-    //   (prime - 1);
+    let hm = sha256ToBigInt(hashMessage) % (prime - 1);
+    let tc = (privatekey * delta) % (prime - 1);
     gamma =
-      ((parseInt(hashMessage, 10) - privatekey * delta) * invK(k, prime - 1)) %
+      (((hm - tc + (prime - 1)) % (prime - 1)) * invK(k, prime - 1)) %
       (prime - 1);
-  } while (gamma <= 0);
+  } while (gamma <= 0 || gamma === null || gamma === NaN);
 
   return {
     delta: delta,
@@ -344,25 +364,48 @@ const Sign = (prime, alpha, privatekey, message) => {
 
 const VerifySignature = (p, alpha, publicKey, signature, message) => {
   const hashMessage = HashMessage(message);
-  return (
-    (Math.pow(publicKey, signature.delta) *
-      Math.pow(signature.delta, signature.gamma)) %
-      p ===
-    modPow(alpha, parseInt(hashMessage, 10), p)
+  let hashInt = parseInt(hashMessage, 10);
+  console.log(
+    "🚀 ~ file: index.js:347 ~ VerifySignature ~ parseInt:",
+    sha256ToBigInt(hashMessage)
   );
+
+  let x = modPow(publicKey, signature.delta, p);
+
+  let y = modPow(signature.delta, signature.gamma, p);
+
+  return (x * y) % p === modPow(alpha, sha256ToBigInt(hashMessage), p);
 };
 
 const key = generatekey(2);
 
-const p = key.p;
-const alpha = key.alpha;
+console.log(key);
 
-// const signature = Sign(p, alpha, key.PrivateKey, message);
+const confirm = () => {
+  let prime = parseInt(document.getElementById("prime").value);
+  if (!isPrime(prime)) {
+    alert("p khong phai so nguyen to");
+    return;
+  }
+  let alpha = parseInt(document.getElementById("alpha").value);
+  if (alpha < 1 || alpha > prime - 1) {
+    alert("alpha khong hop le");
+    return;
+  }
+  let a = parseInt(document.getElementById("a").value);
+  if (a < 1 || a > prime - 2) {
+    alert("a khong hop le");
+    return;
+  }
 
-// console.log(VerifySignature(p, alpha, key.PublicKey, signature, message));
-// console.log(key);
-// console.log(parseInt(HashMessage(message)));
-// console.log(signature);
+  key = {
+    p: prime,
+    alpha: alpha,
+    PublicKey: modPow(alpha, a, prime),
+    PrivateKey: a,
+  };
+  console.log(key);
+};
 
 const DoSign = (id) => {
   let message = GetFormObject(id).plt ?? null;
@@ -370,7 +413,7 @@ const DoSign = (id) => {
     console.log("ngu");
     return;
   }
-  const signature = Sign(p, alpha, key.PrivateKey, message);
+  const signature = Sign(key.p, key.alpha, key.PrivateKey, message);
   const sign_content = document.getElementById("sign");
   sign_content.value = JSON.stringify(signature);
 };
@@ -388,18 +431,16 @@ const DoVerify = (id) => {
   const signature = JSON.parse(formData?.vsign ?? null);
 
   const isValid = VerifySignature(
-    p,
-    alpha,
+    key.p,
+    key.alpha,
     key.PublicKey,
     signature,
     plainText
   );
   if (isValid) {
-    notification.value = "Is Valid";
+    notification.value = "Hop Le";
     return;
   }
-  notification.value = "Invalid !";
+  notification.value = "Khong Hop Le !";
   return;
 };
-
-Wor
