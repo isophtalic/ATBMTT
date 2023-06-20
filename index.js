@@ -376,8 +376,15 @@ const VerifySignature = (p, alpha, publicKey, signature, message) => {
 
   return (x * y) % p === modPow(alpha, sha256ToBigInt(hashMessage), p);
 };
+var key;
 
-const key = generatekey(2);
+const GenerateKey = () => {
+  key = generatekey(2);
+  document.getElementById("pub").value = key.PublicKey;
+  document.getElementById("pri").value = key.PrivateKey;
+  document.getElementById("a").value = key.alpha;
+  document.getElementById("p").value = key.p;
+};
 
 console.log(key);
 
@@ -408,9 +415,14 @@ const confirm = () => {
 };
 
 const DoSign = (id) => {
+  if (key === undefined) {
+    alert("Invalid key");
+    return;
+  }
   let message = GetFormObject(id).plt ?? null;
-  if (message === null) {
-    console.log("ngu");
+  console.log(message);
+  if (message === "") {
+    alert("message empty");
     return;
   }
   const signature = Sign(key.p, key.alpha, key.PrivateKey, message);
@@ -429,8 +441,13 @@ const DoVerify = (id) => {
   const notification = document.getElementById("verifyNotification");
   let formData = GetFormObject(id);
   const plainText = formData?.vplt ?? null;
-  console.log(plainText);
+
   const signature = JSON.parse(formData?.vsign ?? null);
+
+  if (plainText === "" || signature === "") {
+    alert("Yeu cau nhap du cac truong");
+    return;
+  }
 
   const isValid = VerifySignature(
     key.p,
