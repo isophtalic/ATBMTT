@@ -418,8 +418,10 @@ const DoSign = (id) => {
   sign_content.value = JSON.stringify(signature);
 };
 
-const DoMove = (id) => {
+const DoMove = (id, plainField) => {
   let signature = GetFormObject(id)?.sign;
+  let plainTxt = GetFormObject(plainField)?.plt;
+  document.getElementById("vplt").value = plainTxt;
   document.getElementById("vsign").value = signature;
 };
 
