@@ -438,16 +438,21 @@ const DoMove = (id, plainField) => {
 };
 
 const DoVerify = (id) => {
+  if (key === undefined) {
+    alert("Invalid key");
+    return;
+  }
   const notification = document.getElementById("verifyNotification");
   let formData = GetFormObject(id);
-  const plainText = formData?.vplt ?? null;
+  const plainText = formData?.vplt;
+  console.log();
 
-  const signature = JSON.parse(formData?.vsign ?? null);
-
-  if (plainText === "" || signature === "") {
+  if (plainText.length === 0 || formData?.vsign.length === 0) {
     alert("Yeu cau nhap du cac truong");
     return;
   }
+
+  const signature = JSON.parse(formData?.vsign);
 
   const isValid = VerifySignature(
     key.p,
