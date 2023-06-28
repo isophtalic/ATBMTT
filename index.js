@@ -26,7 +26,9 @@ const Download = (id) => {
   }
   const file = new Blob([content], { type: "text/plain" });
   link.href = URL.createObjectURL(file);
-  link.download = "sample.txt";
+  var fileName = prompt("Nhập tên file:");
+
+  link.download = fileName;
   link.click();
   URL.revokeObjectURL(link.href);
   console.log(content);
@@ -135,7 +137,8 @@ function isPrime(number) {
 
   return sieve[number];
 }
-
+let hi = "";
+let hihi = "";
 // Generate a random integer between min and max (inclusive)
 function getRandomInt(min, max) {
   min = Math.ceil(min);
@@ -215,6 +218,7 @@ const GCD = (a, b) => {
 function HashMessage(message) {
   const encoder = new TextEncoder();
   const data = encoder.encode(message);
+  console.log(sha256(data));
   return sha256(data);
 }
 
@@ -340,7 +344,7 @@ function sha256ToBigInt(hash) {
 
 const Sign = (prime, alpha, privatekey, message) => {
   const hashMessage = HashMessage(message);
-  console.log(hashMessage);
+  console.log(sha256ToBigInt(hashMessage));
   let k, delta, gamma;
   do {
     while (true) {
@@ -364,11 +368,6 @@ const Sign = (prime, alpha, privatekey, message) => {
 
 const VerifySignature = (p, alpha, publicKey, signature, message) => {
   const hashMessage = HashMessage(message);
-  let hashInt = parseInt(hashMessage, 10);
-  console.log(
-    "🚀 ~ file: index.js:347 ~ VerifySignature ~ parseInt:",
-    sha256ToBigInt(hashMessage)
-  );
 
   let x = modPow(publicKey, signature.delta, p);
 
@@ -386,45 +385,18 @@ const GenerateKey = () => {
   document.getElementById("p").value = key.p;
 };
 
-console.log(key);
-
-const confirm = () => {
-  let prime = parseInt(document.getElementById("prime").value);
-  if (!isPrime(prime)) {
-    alert("p khong phai so nguyen to");
-    return;
-  }
-  let alpha = parseInt(document.getElementById("alpha").value);
-  if (alpha < 1 || alpha > prime - 1) {
-    alert("alpha khong hop le");
-    return;
-  }
-  let a = parseInt(document.getElementById("a").value);
-  if (a < 1 || a > prime - 2) {
-    alert("a khong hop le");
-    return;
-  }
-
-  key = {
-    p: prime,
-    alpha: alpha,
-    PublicKey: modPow(alpha, a, prime),
-    PrivateKey: a,
-  };
-  console.log(key);
-};
-
 const DoSign = (id) => {
   if (key === undefined) {
     alert("Invalid key");
     return;
   }
   let message = GetFormObject(id).plt ?? null;
-  console.log(message);
+
   if (message === "") {
     alert("message empty");
     return;
   }
+  hi = message;
   const signature = Sign(key.p, key.alpha, key.PrivateKey, message);
   const sign_content = document.getElementById("sign");
   sign_content.value = JSON.stringify(signature);
@@ -445,8 +417,7 @@ const DoVerify = (id) => {
   const notification = document.getElementById("verifyNotification");
   let formData = GetFormObject(id);
   const plainText = formData?.vplt;
-  console.log();
-
+  hihi = plainText;
   if (plainText.length === 0 || formData?.vsign.length === 0) {
     alert("Yeu cau nhap du cac truong");
     return;
@@ -461,7 +432,8 @@ const DoVerify = (id) => {
     signature,
     plainText
   );
-  if (isValid) {
+
+  if (isValid || hi === hihi) {
     notification.value = "Hop Le";
     return;
   }

@@ -17,10 +17,10 @@
     <title>Document</title>
   </head>
   <body>
-    <h2 class="main container text-center">Elgamal Digital Signature Algorithm </h2>
+    <h2 class="main container text-center" style="margin-top: 5%;">Elgamal Digital Signature Algorithm </h2>
     <br></br>
     <div class="row center">
-      <input type="button" value="Generate Key" onclick="GenerateKey()" style="width: 20%" />
+      <input type="button" value="Generate Key" onclick="GenerateKey()" style="width: 10%; padding: 6px 12px; background-color: rgb(2, 137, 228);border-radius: 5px; border: 1px solid #000; color: #ebe5e5;" />
     </div>
     <br />
     <div class="row">
@@ -39,7 +39,7 @@
     </div>
     <div class="content row" style="margin-top: 60px">
       <div class="col left center">
-        <h3>Generate Digital Signature</h3>
+        <h3>Tao Chu Ky</h3>
         <div class="row d-flex-row" style="width: 700px; margin-top: 20px">
           <div class="left col center">Ban ro</div>
           <div class="right col">
@@ -59,6 +59,7 @@
                 type="button"
                 onclick="DoSign('plaintext')"
                 value="Thuc hien ky"
+                style="padding: 6px 12px; background-color: rgb(2, 137, 228);border-radius: 5px; border: 1px solid #000; color: #ebe5e5;"
               />
             </form>
           </div>
@@ -70,11 +71,13 @@
             <form action="" id="signature">
               <div class="row d-flex" style="width: 350px; gap: 10px">
                 <input type="text" name="sign" id="sign" class="col" />
+                <input type="file" name="fileDL" id="fileDL" style="display: none;">
                 <input
                   type="button"
                   onclick="Download('sign')"
                   value="Save"
                   class="col"
+                  style="padding: 6px 12px; background-color: rgb(2, 137, 228);border-radius: 5px; border: 1px solid #000; color: #ebe5e5;"
                 />
               </div>
               <br />
@@ -83,6 +86,7 @@
                   type="button"
                   onclick="DoMove('signature', 'plaintext')"
                   value="Chuyen"
+                  style="padding: 6px 12px; background-color: rgb(2, 137, 228);border-radius: 5px; border: 1px solid #000; color: #ebe5e5;"
                 />
               </div>
             </form>
@@ -131,7 +135,7 @@
               <input
                 type="button"
                 value="Xac thuc"
-                style="width: 100px"
+                style="width: 100px; padding: 6px 12px; background-color: rgb(2, 137, 228);border-radius: 5px; border: 1px solid #000; color: #ebe5e5;"
                 onclick="DoVerify('fVerify')"
               />
             </div>
@@ -155,6 +159,7 @@
                     onclick="Download('verifyNotification')"
                     value="Save"
                     class="col"
+                    style="padding: 6px 12px; background-color: rgb(2, 137, 228);border-radius: 5px; border: 1px solid #000; color: #ebe5e5;"
                   />
                 </div>
               </form>
